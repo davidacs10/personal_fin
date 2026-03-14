@@ -6,6 +6,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from logic.loader import cargar_excel
 from logic.analyzer import resumen_por_categoria, variacion_mensual
 from logic.charts import grafico_pastel, grafico_barras_mes, grafico_barras_categoria
+from logic.ai_advisor import analizar_gastos
 
 st.set_page_config(page_title="AI Finance Advisor", page_icon="💰", layout="wide")
 st.title("💰 AI Finance Advisor")
@@ -65,3 +66,20 @@ categorias = ["Todas"] + sorted(df["Categoria"].unique().tolist())
 filtro = st.selectbox("Filtrar por categoría", categorias)
 df_vista = df if filtro == "Todas" else df[df["Categoria"] == filtro]
 st.dataframe(df_vista, use_container_width=True, hide_index=True)
+
+# ── Análisis con IA ──────────────────────────────────────
+st.divider()
+st.subheader("🤖 Análisis con IA")
+st.caption("Gemini analizará tus patrones de gasto y te dará consejos personalizados.")
+
+if st.button("✨ Analizar mis gastos con Gemini", type="primary"):
+    with st.spinner("Gemini está analizando tus gastos..."):
+        try:
+            analisis = analizar_gastos(df)
+            st.success("¡Análisis completado!")
+            st.markdown(analisis)
+        except Exception as e:
+            st.error(f"Error al conectar con Gemini: {e}")
+            st.info(
+                "Verifica que tu GOOGLE_API_KEY esté correctamente configurada en el archivo .env"
+            )
